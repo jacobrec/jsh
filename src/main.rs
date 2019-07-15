@@ -2,5 +2,6 @@ mod parser;
 mod ast;
 
 fn main() {
-    parser::parse(String::from("Hello, World!"));
+    let result = parser::parse(String::from("cal"));
+    println!("{}", result);
 }

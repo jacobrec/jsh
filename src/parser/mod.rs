@@ -1,6 +1,5 @@
-pub fn parse(input: String) -> super::ast::Ast {
-    println!("{}", input);
-    return super::ast::new()
+pub fn parse(input: String) -> Box<super::ast::Ast> {
+    return Box::from(super::ast::Token{ value: input })
 }
 
 
@@ -24,5 +23,11 @@ mod test{
     #[ignore]
     fn e2e_test_3() {
         parse(String::from("echo '(+ he llo)'"));
+    }
+
+    #[test]
+    fn e2e_test_4() {
+        let result = parse(String::from("cal"));
+        assert_eq!(result.eval(), "cal");
     }
 }
