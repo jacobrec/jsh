@@ -43,6 +43,14 @@ where
     }
 }
 
+// and!(p1, p2, p3) -> and(p1, and!(p2, p3)) -> and(p1, and(p2, and!(p3))) -> and(p1, and(p2, p3))
+macro_rules! and {
+    ($($rest:tt)+) => (and_inner!( $( $rest )+ ));
+}
+macro_rules! and_inner {
+    ($w:expr) => ($w);
+    ($w:expr, $($rest:tt)+) => (and($w, and_inner!( $( $rest )+ )));
+}
 
 
 
@@ -99,6 +107,16 @@ mod test {
 
         let res = ba("orange");
         assert_eq!(res.expect_err("This test should fail"), "orange");
+    }
+
+    #[test]
+    fn test_and_b() {
+        let banana = and!(lit("b"), lit("a"), lit("n"), lit("a"), lit("n"), lit("a"));
+        let res = banana("banana");
+        let data = res.expect("This test should pass");
+        assert_eq!(data.0, "");
+        //assert_eq!(data.1, ("b".to_string(), "a".to_string(), "n".to_string(), "a".to_string(), "n".to_string(), "a".to_string()));
+
     }
 
 }
