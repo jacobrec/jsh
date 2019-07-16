@@ -1,19 +1,8 @@
-mod combinators;
+mod lists;
+mod atoms;
 
 pub fn parse(input: String) -> Box<super::ast::Ast> {
-    parse_s_expr(input)
-}
-
-fn parse_s_expr(input: String) -> Box<super::ast::Ast> {
-    Box::from(super::ast::Token{ value: input })
-}
-
-fn parse_token(input: String) -> Box<super::ast::Ast> {
-    Box::from(super::ast::Token{ value: parse_string(input) })
-}
-
-fn parse_string(input: String) -> String {
-    input
+    lists::parse_s_expr(input)
 }
 
 
