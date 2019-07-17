@@ -1,8 +1,13 @@
 mod lists;
 mod atoms;
+mod utils;
 
 pub fn parse(input: String) -> super::ast::SExp {
-    lists::parse_s_expr(input)
+    lists::parse_s_expr(clean_input(input)).0
+}
+fn clean_input(input: String) -> String {
+    let s = format!("({})", input);
+    s.replace("(", " ( ").replace(")", " ) ")
 }
 
 
@@ -11,27 +16,46 @@ mod test{
     use super::*;
 
     #[test]
-    #[ignore]
     fn e2e_test_1() {
-        parse(String::from("echo hello"));
+        let result = parse(String::from("echo hello"));
+        assert_eq!(result, crate::ast::SExp::SPair(
+                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("echo")))),
+                Box::from(crate::ast::SExp::SPair(
+                        Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("hello")))),
+                        Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::ANil))))));
     }
 
     #[test]
-    #[ignore]
     fn e2e_test_2() {
-        parse(String::from("echo (+ he llo)"));
+        let result = parse(String::from("echo (+ he llo)"));
+        assert_eq!(result, crate::ast::SExp::SPair(
+                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("echo")))),
+                Box::from(crate::ast::SExp::SPair(
+                    Box::from(crate::ast::SExp::SPair(
+                        Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("+")))),
+                        Box::from(crate::ast::SExp::SPair(
+                            Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("he")))),
+                            Box::from(crate::ast::SExp::SPair(
+                                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("llo")))),
+                                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::ANil)))))))),
+                    Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::ANil))))));
     }
 
     #[test]
-    #[ignore]
     fn e2e_test_3() {
-        parse(String::from("echo '(+ he llo)'"));
+        let result = parse(String::from("echo \"(+ he llo)\""));
+        assert_eq!(result, crate::ast::SExp::SPair(
+                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("echo")))),
+                Box::from(crate::ast::SExp::SPair(
+                        Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("(+ he llo)")))),
+                        Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::ANil))))));
     }
 
     #[test]
-    #[ignore]
     fn e2e_test_4() {
         let result = parse(String::from("cal"));
-        //assert_eq!(result.eval(), "cal");
+        assert_eq!(result, crate::ast::SExp::SPair(
+                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::AString(String::from("cal")))),
+                Box::from(crate::ast::SExp::SAtom(crate::ast::Atom::ANil))));
     }
 }

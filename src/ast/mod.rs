@@ -1,3 +1,4 @@
+#[derive(PartialEq)]
 #[derive(Debug)]
 pub enum SExp {
     SAtom(Atom),
@@ -11,5 +12,5 @@ pub enum Atom {
     AInt(i32),
     AFloat(f32),
     ABool(bool),
-    ANil()
+    ANil
 }
