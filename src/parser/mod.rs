@@ -2,14 +2,13 @@ mod lists;
 mod atoms;
 mod utils;
 
-pub fn parse(input: String) -> super::ast::SExp {
+pub fn parse(input: String) -> crate::ast::SExp {
     lists::parse_s_expr(clean_input(input)).0
 }
-fn clean_input(input: String) -> String {
-    let s = format!("({})", input);
-    s.replace("(", " ( ").replace(")", " ) ")
-}
 
+fn clean_input(input: String) -> String {
+    format!("({})", input)
+}
 
 #[cfg(test)]
 mod test{

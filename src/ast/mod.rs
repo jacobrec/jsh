@@ -9,8 +9,8 @@ pub enum SExp {
 #[derive(Debug)]
 pub enum Atom {
     AString(String),
-    AInt(i32),
-    AFloat(f32),
-    ABool(bool),
+    // AInt(i32),
+    // AFloat(f32),
+    // ABool(bool),
     ANil
 }

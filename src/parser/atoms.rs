@@ -6,13 +6,12 @@ pub fn parse_atom(input: String) -> Result<(crate::ast::Atom, String), String> {
     } else {
         parse_token(input).and_then(|tok| Ok((crate::ast::Atom::AString(tok.0), tok.1)))
     }
-
 }
 
 pub fn parse_token(iinput: String) -> Result<(String, String), String> {
     let mut input = iinput.clone();
-    input.find(' ')
-        .and_then(|x| { let rest = input.split_off(x); Some((input, rest)) })
+    let val = find_first(&input, vec![String::from(" "), String::from("("), String::from(")")]);
+    val.and_then(|x| { let rest = input.split_off(x); Some((input, rest)) })
         .and_then(|(val, rest)| Some((String::from(val), clean(rest))))
         .ok_or(iinput)
 }
@@ -48,6 +47,12 @@ mod test{
 
     #[test]
     fn test_parse_token() {
+        let tbox2 = parse_token(String::from("Hello)"));
+        let t2 = tbox2.expect("This should pass");
+
+        assert_eq!(t2.0, String::from("Hello"));
+        assert_eq!(t2.1, String::from(")"));
+
         let tbox = parse_token(String::from("Hello world"));
         let t = tbox.expect("This should pass");
 
