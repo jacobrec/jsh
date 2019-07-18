@@ -18,7 +18,7 @@ pub fn eval(result: ast::SExp) {
     if false {
         display(&result);
     }
-    print!("{}", eval_inner(result));
+    eval_inner(result);
 }
 
 fn eval_inner(result: ast::SExp) -> String {
@@ -58,7 +58,7 @@ fn eval_command(head: ast::SExp, tail: ast::SExp) -> String {
         if let Some(builtin) = builtins::get_builtin(&cmd) {
             builtin(tail)
         } else {
-            eval_prgm(cmd, tail, Stdio::piped(), Stdio::piped(), Stdio::piped())
+            eval_prgm(cmd, tail, Stdio::inherit(), Stdio::inherit(), Stdio::inherit())
         }
     } else {
         panic!("Head is not a string")
@@ -82,7 +82,7 @@ fn eval_prgm(cmd: String, tail: ast::SExp, std_in: std::process::Stdio, std_out:
 }
 
 fn eval_pipe_chain(programs: Vec<(String, ast::SExp)>) -> String {
-    let mut prgms = programs.into_iter();
+    let mut prgms = programs.into_iter().peekable();
     let mut previous = None;
     while let Some((cmd, tail)) = prgms.next() {
         let cmd_copy = cmd.clone();
@@ -91,8 +91,8 @@ fn eval_pipe_chain(programs: Vec<(String, ast::SExp)>) -> String {
             .stdin(previous
                    .and_then(|c: Child| Some(c.stdout))
                    .and_then(|std| Some(Stdio::from(std.unwrap())))
-                   .unwrap_or(Stdio::piped()))
-            .stdout(Stdio::piped())
+                   .unwrap_or(Stdio::inherit()))
+            .stdout(if prgms.peek().is_some() {Stdio::piped()} else {Stdio::inherit()})
             .stderr(Stdio::piped())
             .spawn();
         if let Ok(output) = process {
@@ -103,7 +103,7 @@ fn eval_pipe_chain(programs: Vec<(String, ast::SExp)>) -> String {
     }
     // TODO: better error handling in for pipes
     if let Some(mut final_command) = previous {
-        final_command.wait();
+        final_command.wait().expect("failed to wait on final command in pipe chain");
         let mut buf = String::new();
         final_command.stdout.and_then(|mut std| Some(std.read_to_string(&mut buf)));
         buf

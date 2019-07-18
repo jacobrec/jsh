@@ -18,7 +18,7 @@ fn main() {
             Ok(input) => {
                 eval::eval(parser::parse(input));
             },
-            Err(1) => { println!(); break },
+            Err(1) => { break },
             Err(_) => ()
         }
     }

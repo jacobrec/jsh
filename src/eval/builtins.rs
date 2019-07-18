@@ -5,6 +5,7 @@ pub fn get_builtin(cmd: &String) -> Option<fn(crate::ast::SExp) -> String> {
     match cmd.as_ref() {
         "cd" => Some(builtin_cd),
         "pipe" => Some(builtin_pipe),
+        "set" => Some(builtin_pipe),
         _ => None
     }
 }
