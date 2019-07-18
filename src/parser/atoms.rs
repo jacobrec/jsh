@@ -4,7 +4,7 @@ pub fn parse_atom(input: String) -> Result<(crate::ast::Atom, String), String> {
     if input.starts_with("\"") {
         parse_string(input).and_then(|tok| Ok((crate::ast::Atom::AString(tok.0), tok.1)))
     } else {
-        parse_token(input).and_then(|tok| Ok((crate::ast::Atom::AString(tok.0), tok.1)))
+        parse_token(input).and_then(|tok| Ok((crate::ast::Atom::AString(String::from(tok.0.trim())), tok.1)))
     }
 }
 
