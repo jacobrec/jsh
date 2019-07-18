@@ -5,3 +5,5 @@ authors = ["Jacob Reckhard <jacobreckhard@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+rustyline = "5.0.0"
+

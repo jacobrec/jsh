@@ -1,45 +1,30 @@
-use std::io::{self, Write, stdout};
+extern crate rustyline;
 
+mod input;
 mod parser;
 mod ast;
 mod eval;
 
 fn main() {
+    let history_file = ".jsh_history";
+    let mut rl = rustyline::Editor::<()>::new();
+    if rl.load_history(history_file).is_err() {
+        println!("No previous history.");
+    }
+
     loop {
-        prompt();
-        let val = read();
+        let val = input::read(&mut rl);
         match val {
             Ok(input) => {
                 eval::eval(parser::parse(input));
             },
-            Err(0) => { println!(); break },
+            Err(1) => { println!(); break },
             Err(_) => ()
         }
     }
+    rl.save_history(history_file).unwrap();
+
 }
 
-fn prompt () {
-    print!("jsh> ");
-    let mut is_flushed = false;
-    while !is_flushed  {
-        let res = stdout().flush();
-        if let Ok(_) = res {
-            is_flushed = true;
-        }
-    }
-}
 
-fn read () -> Result<String, u8> {
-    let mut input = String::new();
-    match io::stdin().read_line(&mut input) {
-        Ok(n) => {
-            if n > 0 {
-                Ok(input)
-            } else {
-                Err(0)
-            }
-        }
-        Err(_) => Err(1),
-    }
-}
 
