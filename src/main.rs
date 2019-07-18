@@ -42,3 +42,4 @@ fn read () -> Result<String, u8> {
         Err(_) => Err(1),
     }
 }
+

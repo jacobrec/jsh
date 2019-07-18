@@ -101,6 +101,7 @@ fn eval_pipe_chain(programs: Vec<(String, ast::SExp)>) -> String {
             return format!("Command not found: {}", cmd_copy)
         }
     }
+    // TODO: better error handling in for pipes
     if let Some(mut final_command) = previous {
         final_command.wait();
         let mut buf = String::new();
@@ -108,6 +109,23 @@ fn eval_pipe_chain(programs: Vec<(String, ast::SExp)>) -> String {
         buf
     } else {
         String::from("Error?")
+    }
+}
+
+
+#[cfg(test)]
+mod test{
+    use super::*;
+
+    fn str_test(input: &str, output: &str) {
+        let res = eval_inner(crate::parser::parse(String::from(input)));
+        assert_eq!(res.trim(), String::from(output).trim());
+    }
+
+    #[test]
+    fn test_full_e2e_pipes() {
+        str_test("pipe (echo hello world) (wc)", "1       2      12");
+        str_test("pipe (echo hello world) (wc) (wc)", "1       3      24");
     }
 }
 
